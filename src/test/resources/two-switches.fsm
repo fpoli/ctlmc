@@ -1,0 +1,16 @@
+a(2) Bool "F" "T"
+b(2) Bool "F" "T"
+---
+0 0
+0 1
+1 0
+1 1
+---
+1 2 "b on"
+1 3 "a on"
+2 4 "a on"
+2 1 "b off"
+3 1 "a off"
+3 4 "b on"
+4 2 "a off"
+4 3 "b off"

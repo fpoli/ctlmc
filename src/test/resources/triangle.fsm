@@ -1,0 +1,11 @@
+a(2) Bool "F" "T"
+b(2) Bool "F" "T"
+c(2) Bool "F" "T"
+---
+1 0 0
+0 1 0
+0 0 1
+---
+1 2 "go to b"
+2 3 "go to c"
+3 1 "go to a"
