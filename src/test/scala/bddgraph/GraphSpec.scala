@@ -1,26 +1,32 @@
 package ctlmc.bddgraph
 import ctlmc.spec._
+import ctlmc._
+
+class GraphFactorySpec extends UnitSpec {
+	test("Creation") {
+		val factory = new GraphFactory()
+	}
+}
 
 class GraphSpec extends UnitSpec {
 	val factory = new GraphFactory()
-	factory.setStateVarNum(5)
-
-	test("Single var State creation") {
-		val s0 = factory.createState(false).set(0)
-		var params = Array.fill(factory.stateVarNum){false}
-		params(0) = true
-		val s1 = factory.createState(params)
-		assert(s0 == s1)
-	}
+	factory.setParameters(Array(
+		new Parameter("v1", Array("F", "T")),
+		new Parameter("v1", Array("F", "T")),
+		new Parameter("v1", Array("F", "T")),
+		new Parameter("v1", Array("F", "T")),
+		new Parameter("v1", Array("F", "T"))
+	))
+	val params = Array[Int](0, 0, 0, 0, 0)
 
 	test("Single var State comparison, positive") {
-		assert(factory.createState(false).set(1)
-			== factory.createState(false).set(1))
+		assert(factory.createState(params).set(1, 1)
+			== factory.createState(params).set(1, 1))
 	}
 
 	test("Single var State comparison, negative") {
-		assert(factory.createState(false).set(1)
-			!= factory.createState(false).set(2))
+		assert(factory.createState(params).set(1, 1)
+			!= factory.createState(params).set(2, 1))
 	}
 
 	test("Full StateSet comparison") {
@@ -32,26 +38,26 @@ class GraphSpec extends UnitSpec {
 	}
 
 	test("Custom StateSet comparison, positive 1") {
-		val s0 = factory.createState(false).set(1)
+		val s0 = factory.createState(params).set(1, 1)
 		assert(factory.createStateSet(s0) == factory.createStateSet(s0))
 	}
 
 	test("Custom StateSet comparison, positive 2") {
-		val s0 = factory.createState(false).set(0)
-		val s1 = factory.createState(false).set(1)
+		val s0 = factory.createState(params).set(0, 1)
+		val s1 = factory.createState(params).set(1, 1)
 		assert(factory.createStateSet(Array(s0, s1))
 			== factory.createStateSet(Array(s1, s0)))
 	}
 
 	test("Custom StateSet comparison, negative") {
-		val s0 = factory.createState(false).set(0)
-		val s1 = factory.createState(false).set(1)
+		val s0 = factory.createState(params).set(0, 1)
+		val s1 = factory.createState(params).set(1, 1)
 		assert(factory.createStateSet(s0) != factory.createStateSet(s1))
 	}
 
 	test("Preimage, segment") {
-		val s0 = factory.createState(false).set(0)
-		val s1 = factory.createState(false).set(1)
+		val s0 = factory.createState(params).set(0, 1)
+		val s1 = factory.createState(params).set(1, 1)
 		val graph = factory.createGraph(Array(
 			factory.createEdge(s0, s1)
 		))
@@ -61,9 +67,9 @@ class GraphSpec extends UnitSpec {
 	}
 
 	test("Preimage, line") {
-		val s0 = factory.createState(false).set(0)
-		val s1 = factory.createState(false).set(1)
-		val s2 = factory.createState(false).set(2)
+		val s0 = factory.createState(params).set(0, 1)
+		val s1 = factory.createState(params).set(1, 1)
+		val s2 = factory.createState(params).set(2, 1)
 		val graph = factory.createGraph(Array(
 			factory.createEdge(s0, s1),
 			factory.createEdge(s1, s2),
@@ -75,9 +81,9 @@ class GraphSpec extends UnitSpec {
 	}
 
 	test("Preimage, triangle") {
-		val s0 = factory.createState(false).set(0)
-		val s1 = factory.createState(false).set(1)
-		val s2 = factory.createState(false).set(2)
+		val s0 = factory.createState(params).set(0, 1)
+		val s1 = factory.createState(params).set(1, 1)
+		val s2 = factory.createState(params).set(2, 1)
 		val graph = factory.createGraph(Array(
 			factory.createEdge(s0, s1),
 			factory.createEdge(s1, s2),

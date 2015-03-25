@@ -6,20 +6,6 @@ trait BDDFactoryReference {
 }
 
 trait BDDOperations extends BDDFactoryReference {
-	def createBDD(params: Iterable[Boolean], startFrom: Int): BDD = {
-		val res = bddFactory.one()
-		for ((isTrue, i) <- params.zipWithIndex) {
-			val varBDD: BDD = if (isTrue) {
-				bddFactory.ithVar(startFrom + i)
-			} else {
-				bddFactory.nithVar(startFrom + i)
-			}
-			// Warning: andWith makes varBDD unusuable
-			res.andWith(varBDD)
-		}
-		res
-	}
-
 	def shiftToRight(stateVarNum: Int, bdd: BDD): BDD = {
 		val pair = bddFactory.makePair()
 		for (i <- 0 until stateVarNum) {
@@ -36,5 +22,5 @@ trait BDDOperations extends BDDFactoryReference {
 
 trait FactoryElement {
 	val bdd: BDD
-	override def toString() = bdd.toString()
+	override def toString() = bdd.toStringWithDomains()
 }

@@ -1,28 +1,43 @@
 package ctlmc.bddgraph
+import ctlmc._
 import net.sf.javabdd._
 
 class GraphFactory extends BDDFactoryReference with BDDOperations {
 	val bddFactory = BDDFactory.init("java", 1000, 1000)
+	var domainList: DomainList = new DomainList(this, Array[Domain]())
 
-	def setStateVarNum(n: Int): Unit = bddFactory.setVarNum(2*n)
-	def stateVarNum(): Int = bddFactory.varNum() / 2
+	// Hide default listeners
+	def bddCallback() = {}
+	bddFactory.registerGCCallback(this, getClass.getDeclaredMethod("bddCallback"))
+	bddFactory.registerReorderCallback(this, getClass.getDeclaredMethod("bddCallback"))
+	bddFactory.registerResizeCallback(this, getClass.getDeclaredMethod("bddCallback"))
 
-	def createState(params: Iterable[Boolean]): State =
+	def numParameters(): Int = domainList.size
+	def stateVarNum(): Int = domainList.bddSize
+
+	def setParameters(params: Array[Parameter]): Unit = {
+		assert(numParameters == 0, "Parameters already initialized")
+		domainList = new DomainList(this, params)
+		bddFactory.setVarNum(2*domainList.bddSize)
+	}
+
+	def createState(params: Iterable[Int]): State =
 		new State(this, params)
-	def createState(value: Boolean): State =
-		new State(this, value) // All the parameters have the same value
+
 	def createStateSet(state: State): StateSet =
 		new StateSet(this, state)
 	def createStateSet(states: Iterable[State]): StateSet =
 		new StateSet(this, states)
-	def createStateSet(i: Int, value: Boolean = true): StateSet =
-		new StateSet(this, i, value)
+	def createStateSet(param: Int, value: Int): StateSet =
+		new StateSet(this, param, value)
 	def createFullStateSet(): StateSet =
-		new StateSet(this, bddFactory.one)
+		new StateSet(this, domainList.createFullBDD) // This is not the one() BDD
 	def createEmptyStateSet(): StateSet =
 		new StateSet(this, bddFactory.zero)
+	
 	def createEdge(start: State, end: State): Edge =
 		new Edge(this, start, end)
+	
 	def createGraph(edges: Iterable[Edge]): Graph =
 		new Graph(this, edges)
 }

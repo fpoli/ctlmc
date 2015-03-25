@@ -14,10 +14,9 @@ class StateSet(val factory: GraphFactory, val bdd: BDD) extends FactoryElement {
 		set
 	})
 
-	def this(factory: GraphFactory, i: Int, value: Boolean = true) = this(factory, {
-		assert(i >= 0 && i < factory.stateVarNum)
-		if (value) factory.bddFactory.ithVar(i)
-		else factory.bddFactory.nithVar(i)
+	def this(factory: GraphFactory, param: Int, value: Int) = this(factory, {
+		assert(param >= 0 && param < factory.numParameters)
+		factory.domainList.getDomain(param).createBDD(value)
 	})
 
 	def contains(state: State): Boolean =

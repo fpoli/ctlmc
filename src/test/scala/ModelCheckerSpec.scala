@@ -42,47 +42,47 @@ class ModelCheckerTwoSwitchesSpec extends ModelCheckerSourceSpec(
 	"/two-switches.fsm",
 	Array[Ctl](
 		True,
-		Not(Atom("a")),
-		Not(Atom("b")),
-		Or(Atom("a"), Not(Atom("b"))),
-		And(Not(Atom("a")), Not(Atom("b"))),
+		Not(Atom("a", "T")),
+		Not(Atom("b", "T")),
+		Or(Atom("a", "T"), Not(Atom("b", "T"))),
+		And(Not(Atom("a", "T")), Not(Atom("b", "T"))),
 		// Preimage (AX, EX)
-		AX(Or(Atom("a"), Atom("b"))),
-		AX(AX(AX(Or(Atom("a"), Atom("b"))))),
+		AX(Or(Atom("a", "T"), Atom("b", "T"))),
+		AX(AX(AX(Or(Atom("a", "T"), Atom("b", "T"))))),
 		AX(AX(Or(
-			And(Atom("a"), Atom("b")),
-			And(Not(Atom("a")), Not(Atom("b")))
+			And(Atom("a", "T"), Atom("b", "T")),
+			And(Not(Atom("a", "T")), Not(Atom("b", "T")))
 		))),
-		EX(Atom("a")),
-		EX(Atom("b")),
-		EX(Not(Atom("a"))),
-		EX(Not(Atom("b"))),
+		EX(Atom("a", "T")),
+		EX(Atom("b", "T")),
+		EX(Not(Atom("a", "T"))),
+		EX(Not(Atom("b", "T"))),
 		// Fixpoint
-		EG(Not(Atom("a"))),
-		EG(Not(Atom("b"))),
-		EG(Or(Atom("a"), EX(Atom("a"))))
+		EG(Not(Atom("a", "T"))),
+		EG(Not(Atom("b", "T"))),
+		EG(Or(Atom("a", "T"), EX(Atom("a", "T"))))
 	),
 	Array[Ctl](
 		False,
-		Atom("a"),
-		Atom("b"),
-		And(Not(Atom("a")), Atom("b")),
+		Atom("a", "T"),
+		Atom("b", "T"),
+		And(Not(Atom("a", "T")), Atom("b", "T")),
 		// Preimage (AX, EX)
-		AX(AX(Or(Atom("a"), Atom("b")))),
+		AX(AX(Or(Atom("a", "T"), Atom("b", "T")))),
 		And(
-			And(Not(Atom("a")), Not(Atom("b"))),
-			EX(And(Atom("a"), Atom("b")))
+			And(Not(Atom("a", "T")), Not(Atom("b", "T"))),
+			EX(And(Atom("a", "T"), Atom("b", "T")))
 		),
-		EX(And(Atom("a"), Atom("b"))),
-		EX(And(Not(Atom("a")), Not(Atom("b")))),
+		EX(And(Atom("a", "T"), Atom("b", "T"))),
+		EX(And(Not(Atom("a", "T")), Not(Atom("b", "T")))),
 		// Fixpoint
-		EG(Atom("a")),
-		EG(Atom("b")),
-		AG(Not(Atom("a"))),
-		AG(Not(Atom("b"))),
+		EG(Atom("a", "T")),
+		EG(Atom("b", "T")),
+		AG(Not(Atom("a", "T"))),
+		AG(Not(Atom("b", "T"))),
 		EF(And(
-			And(Atom("a"), Atom("b")),
-			EX(And(Not(Atom("a")), Not(Atom("b"))))
+			And(Atom("a", "T"), Atom("b", "T")),
+			EX(And(Not(Atom("a", "T")), Not(Atom("b", "T"))))
 		))
 	)
 )
@@ -90,20 +90,20 @@ class ModelCheckerTwoSwitchesSpec extends ModelCheckerSourceSpec(
 class ModelCheckerTriangleSpec extends ModelCheckerSourceSpec(
 	"/triangle.fsm",
 	Array[Ctl](
-		// test Not(And(Atom("a"), Atom("b")))
-		Not(And(Atom("a"), Atom("b"))),
-		AX(Not(And(Atom("a"), Atom("b")))),
-		AX(AX(Not(And(Atom("a"), Atom("b"))))),
-		EG(Not(And(Atom("a"), Atom("b")))),
-		AG(Not(And(Atom("a"), Atom("b")))),
-		// test Imply(Atom("a"), AX(Atom("b")))
-		Imply(Atom("a"), AX(Atom("b"))),
-		AX(Imply(Atom("a"), AX(Atom("b")))),
-		AX(AX(Imply(Atom("a"), AX(Atom("b"))))),
-		EG(Imply(Atom("a"), AX(Atom("b")))),
-		AG(Imply(Atom("a"), AX(Atom("b")))),
+		// test Not(And(Atom("a", "T"), Atom("b", "T")))
+		Not(And(Atom("a", "T"), Atom("b", "T"))),
+		AX(Not(And(Atom("a", "T"), Atom("b", "T")))),
+		AX(AX(Not(And(Atom("a", "T"), Atom("b", "T"))))),
+		EG(Not(And(Atom("a", "T"), Atom("b", "T")))),
+		AG(Not(And(Atom("a", "T"), Atom("b", "T")))),
+		// test Imply(Atom("a", "T"), AX(Atom("b", "T")))
+		Imply(Atom("a", "T"), AX(Atom("b", "T"))),
+		AX(Imply(Atom("a", "T"), AX(Atom("b", "T")))),
+		AX(AX(Imply(Atom("a", "T"), AX(Atom("b", "T"))))),
+		EG(Imply(Atom("a", "T"), AX(Atom("b", "T")))),
+		AG(Imply(Atom("a", "T"), AX(Atom("b", "T")))),
 		// Test Iff
-		AG(Iff(Atom("c"), AX(Atom("a"))))
+		AG(Iff(Atom("c", "T"), AX(Atom("a", "T"))))
 	),
 	Array[Ctl](
 		
@@ -115,22 +115,22 @@ class ModelCheckerMutualExclusionSpec extends ModelCheckerSourceSpec(
 	Array[Ctl](
 		// === Mutual exclusion (safety)
 		// There is no reachable state in which C1 C2 holds
-		AG(Not(And(Atom("c1"), Atom("c2")))),
+		AG(Not(And(Atom("c1", "T"), Atom("c2", "T")))),
 		// === Liveness
 		// Every path starting from each state where T1 holds
 		// passes through a state where C1 holds
-		Imply(AG(Atom("t1")), AF(Atom("c1"))),
+		Imply(AG(Atom("t1", "T")), AF(Atom("c1", "T"))),
 		// === Blocking
 		// From each state where N1 holds there is a path leading to
 		// a state where T1 holds
-		AG(Imply(Atom("n1"), EF(Atom("t1")))),
+		AG(Imply(Atom("n1", "T"), EF(Atom("t1", "T")))),
 		// Test AU
-		AG(AU(Not(Atom("c2")), Not(Atom("c1"))))
+		AG(AU(Not(Atom("c2", "T")), Not(Atom("c1", "T"))))
 	),
 	Array[Ctl](
 		// === Fairness
 		// In the initial state, there is an infinite cyclic solution in
 		// which C1 never holds
-		AG(AF(Atom("c1")))
+		AG(AF(Atom("c1", "T")))
 	)
 )

@@ -6,15 +6,22 @@ import ctlmc.bddgraph._
 class ModelCheckerException(val msg: String) extends Throwable
 
 class ModelChecker(factory: GraphFactory, model: Model) {
-	def checkAtom(v: String): StateSet = {
-		val index = model.parameters.indexOf(v)
-		if (index == -1) {
-			throw new ModelCheckerException(
-				"Variable " + v + " not found in model"
-			)
-		} else {
-			factory.createStateSet(index)
+	def checkAtom(paramName: String, valueName: String): StateSet = {
+		val (param, paramIndex) = model.parameters.getParameter(paramName) match {
+			case None =>
+				throw new ModelCheckerException(
+					"Parameter \"" + paramName + "\" not found"
+				)
+			case Some(x) => x
 		}
+		val value = param.getValue(valueName) match {
+			case None =>
+				throw new ModelCheckerException(
+					"Value \"" + valueName + "\" not found in domain of parameter \"" + paramName + "\""
+				)
+			case Some(i) => i
+		}
+		factory.createStateSet(paramIndex, value)
 	}
 
 	def preimage(x: StateSet): StateSet = {
@@ -42,7 +49,7 @@ class ModelChecker(factory: GraphFactory, model: Model) {
 		spec match {
 			case True => factory.createFullStateSet()
 			case False => factory.createEmptyStateSet()
-			case Atom(v) => checkAtom(v)
+			case Atom(n, v) => checkAtom(n, v)
 			case Not(p) => check(p).not
 			case And(p, q) => check(p) and check(q)
 			case Or(p, q) => check(p) or check(q)

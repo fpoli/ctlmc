@@ -2,21 +2,17 @@ package ctlmc.bddgraph
 import net.sf.javabdd._
 
 class State(val factory: GraphFactory, val bdd: BDD) extends FactoryElement {
-	def this(factory: GraphFactory, params: Iterable[Boolean]) = this(factory, {
-		assert(params.size == factory.stateVarNum)
-		factory.createBDD(params, 0)
+	def this(factory: GraphFactory, params: Iterable[Int]) = this(factory, {
+		assert(params.size == factory.numParameters)
+		factory.domainList.createBDD(params)
 	})
 
-	// All the parameters with the same value
-	def this(factory: GraphFactory, value: Boolean) = this(factory, {
-		Array.fill(factory.stateVarNum){value}
-	})
-
-	def set(i: Int, value: Boolean = true) = {
-		assert(i >= 0 && i < factory.stateVarNum)
-		val newbdd = bdd.exist(factory.bddFactory.makeSet(Array(i))).and(
-			if (value) factory.bddFactory.ithVar(i)
-			else factory.bddFactory.ithVar(i)
+	def set(param: Int, value: Int) = {
+		assert(param >= 0 && param < factory.numParameters)
+		val domain = factory.domainList.getDomain(param)
+		assert(value >= 0 && value < domain.domainSize)
+		val newbdd = bdd.exist(domain.bddDomain.set).and(
+			domain.createBDD(value)
 		)
 		new State(factory, newbdd)
 	}

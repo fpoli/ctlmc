@@ -13,16 +13,13 @@ trait RunParser extends RegexParsers {
 
 trait UsefulParsers extends RegexParsers {
 	def parentesized[T](p: => Parser[T]): Parser[T] = "(" ~> p <~ ")"
-	def quoted[T](p: => Parser[T]): Parser[T] = "\"" ~> p <~ "\""
-	
-	def nonQuotes = """[^"]*""".r
-	def alphaNumeric = """[a-zA-Z0-9]+""".r
-	def quotedAlphaNumeric = "\"[a-zA-Z0-9]+\"".r ^^ { _.dropRight(1).substring(1) }
-	def falseString = "F" | "f"
-	def trueString = "T" | "t"
+
+	def parameterName = """[a-zA-Z0-9_]+""".r
+	def domainName = """[a-zA-Z0-9()]+""".r
+	def quotedParameterName = "\"[a-zA-Z0-9_]+\"".r ^^ (_.dropRight(1).substring(1))
+	def quotedString = "\"[^\"]*\"".r ^^ (_.dropRight(1).substring(1))
 	def separator = "---"
 	def comma = ","
 
 	def numericValue: Parser[Int] = """[0-9]+""".r ^^ ((x: String) => x.toInt)
-	def booleanValue: Parser[Boolean] = ("0" ^^ (_ => false)) | ("1" ^^ (_ => true))
 }

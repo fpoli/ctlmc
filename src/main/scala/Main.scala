@@ -13,7 +13,7 @@ object Main {
 		// Read arguments
 		if (args.length != 2) {
 			println("Usage: program (CTL specification) (path to model file)")
-			println("e.g.: program 'AG(Not(And(\"c1\", \"c2\")))' \"model.fsm\"")
+			println("e.g.: program 'AG(Not(And(\"c1\"=\"T\", \"c2\"=\"T\")))' \"model.fsm\"")
 			sys.exit(1)
 		}
 		val rawSpecification = args(0)
@@ -25,25 +25,26 @@ object Main {
 		val fsmParser = new FsmParser(graphFactory)
 
 		// Parse input
+		println("(*) Parsing CTL specification " + rawSpecification + " ...")
 		val specification = ctlParser.parse(rawSpecification) match {
 			case Result(result) => result
 			case Failure(msg) => {
-				println("[ERROR] CTL specification parsing error: " + msg)
+				println("[ERROR] Parsing error: " + msg)
 				sys.exit(3)
 			}
 		}
+		println("(*) Parsing FSM model " + modelFile + " ...")
 		val model = fsmParser.parse(source) match {
 			case Result(result) => result
 			case Failure(msg) => {
-				println("[ERROR] FSM model parsing error: " + msg)
+				println("[ERROR] Parsing error: " + msg)
 				sys.exit(4)
 			}
 		}
 
 		// Check model
+		println("(*) Model checking...")
 		val modelChecker = new ModelChecker(graphFactory, model)
-		println("Model: " + modelFile)
-		println("Spec: " + specification)
 		modelChecker.checkInitial(specification) match {
 			case Result(res) =>
 				if (res) {

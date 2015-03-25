@@ -9,19 +9,30 @@ class FsmParser(factory: GraphFactory) extends RegexParsers
 
 	// 1. Parameters
 
-	def parameter: Parser[String] =
-		alphaNumeric <~ parentesized("2") <~ alphaNumeric <~ quoted(falseString) <~ quoted(trueString)
-	def parameterSeq: Parser[Array[String]] = rep1(parameter) ^^ (_.toArray)
+	def valueSeq(valNum: Int): Parser[Array[String]] =
+		repN(valNum, quotedString) ^^ (_.toArray)
+	def parameter: Parser[Parameter] =
+		parameterName >> (param =>
+			parentesized(numericValue) >> (valNum =>
+				domainName ~> valueSeq(valNum) ^^ (values =>
+					new Parameter(param, values)
+				)
+			)
+		)
+	def parameterSeq: Parser[ParameterList] =
+		rep1(parameter) ^^ (x => new ParameterList(x.toArray))
 
 	// 2. States
 
-	def state(varNum: Int): Parser[State] = repN(varNum, booleanValue) ^^ (factory.createState(_))
-	def stateSeq(varNum: Int): Parser[Array[State]] = rep1(state(varNum)) ^^ (_.toArray)
+	def state(varNum: Int): Parser[State] =
+		repN(varNum, numericValue) ^^ (factory.createState(_))
+	def stateSeq(varNum: Int): Parser[Array[State]] =
+		rep1(state(varNum)) ^^ (_.toArray)
 
 	// 3. Transitions
 
 	def transition(states: Array[State]): Parser[Edge] =
-		numericValue ~ numericValue <~ quoted(nonQuotes) ^^ ((x) =>
+		numericValue ~ numericValue <~ quotedString ^^ (x =>
 			factory.createEdge(states(x._1 - 1), states(x._2 - 1))
 		)
 	def transitionSeq(states: Array[State]): Parser[Graph] =
@@ -31,12 +42,12 @@ class FsmParser(factory: GraphFactory) extends RegexParsers
 
 	def expr: Parser[Model] =
 		parameterSeq <~ separator >> (params => {
-			factory.setStateVarNum(params.size)
-			stateSeq(params.size) <~ separator >> (states => {
-				transitionSeq(states) ^^ {
-					(g) => new Model(params, states, g)
-				}
-			})
+			factory.setParameters(params.parameters)
+			stateSeq(params.size) <~ separator >> (states =>
+				transitionSeq(states) ^^ (g =>
+					new Model(params, states, g)
+				)
+			)
 		})
 
 	def parse(input: => String): MaybeResult[Model] =

@@ -7,7 +7,9 @@ import scala.util.parsing.combinator._
 class CtlParser extends RegexParsers with UsefulParsers with RunParser {
 	def exprTrue = "(?i)True".r ^^ { _ => True }
 	def exprFalse = "(?i)False".r ^^ { _ => False }
-	def exprAtom = quotedAlphaNumeric ^^ { x => Atom(x) }
+	def exprAtom = quotedParameterName ~ ("=" ~> quotedString) ^^ (
+			x => Atom(x._1, x._2)
+		)
 
 	def exprOp(name: String): Parser[Ctl] =
 		("(?i)" + name).r ~> parentesized(expr)

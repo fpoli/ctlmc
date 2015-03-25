@@ -4,8 +4,8 @@ abstract class Ctl
 
 case object True extends Ctl
 case object False extends Ctl
-case class Atom(val name: String) extends Ctl {
-	override def toString() = "\"" + name + "\""
+case class Atom(val name: String, val value: String) extends Ctl {
+	override def toString() = "\"" + name + "\"=\"" + value + "\""
 }
 case class Not(val x: Ctl) extends Ctl
 case class And(val x: Ctl, val y: Ctl) extends Ctl

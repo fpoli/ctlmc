@@ -9,7 +9,7 @@ class CtlParserSpec extends UnitSpec {
 	val goodCtl: Array[(String, Ctl)] = Array(
 		("True", True),
 		("False", False),
-		("\"x\"", Atom("x")),
+		("\"x\"=\"T\"", Atom("x", "T")),
 		("Not(True)", Not(True)),
 		("And(True, False)", And(True, False)),
 		("Or(True, False)", Or(True, False)),
@@ -24,10 +24,11 @@ class CtlParserSpec extends UnitSpec {
 		("AU(True, False)", AU(True, False)),
 		("EU(True, False)", EU(True, False)),
 		// Special cases
-		("\"not\"", Atom("not")),
-		("Not(\"and\")", Not(Atom("and"))),
+		("\"not\"=\"T\"", Atom("not", "T")),
+		("Not(\"and\"=\"T\")", Not(Atom("and", "T"))),
 		("  AX  (  True  )  ", AX(True)),
-		("  \"x\"  ", Atom("x")),
+		("  \"x\"  =  \"T\"  ", Atom("x", "T")),
+		("  \"x\"  =  \"  T  \"  ", Atom("x", "  T  ")),
 		("Not(EU(True, False))", Not(EU(True, False)))
 	)
 
@@ -35,7 +36,7 @@ class CtlParserSpec extends UnitSpec {
 		"foobar()",
 		"and",
 		"x",
-		"\"  x  \""
+		"\"  x  \"=\"T\""
 	)
 
 	for ((input, output) <- goodCtl) {
