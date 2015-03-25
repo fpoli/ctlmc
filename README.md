@@ -7,6 +7,8 @@ implemented using
 [BDDs](https://en.wikipedia.org/wiki/Binary_decision_diagram)
 ([JavaBDD](http://javabdd.sourceforge.net/) library).
 
+[![Build Status](https://travis-ci.org/fpoli/ctlmc.svg?branch=master)](https://travis-ci.org/fpoli/ctlmc)
+
 ## Usage
 
     Usage: program (CTL specification) (path to model file)
