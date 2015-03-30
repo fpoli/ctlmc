@@ -55,6 +55,18 @@ class GraphSpec extends UnitSpec {
 		assert(factory.createStateSet(s0) != factory.createStateSet(s1))
 	}
 
+	test("Graph size") {
+		val s0 = factory.createState(params).set(0, 1)
+		val s1 = factory.createState(params).set(1, 1)
+		val s2 = factory.createState(params).set(2, 1)
+		val graph = factory.createGraph(Array(
+			factory.createEdge(s0, s1),
+			factory.createEdge(s1, s2),
+			factory.createEdge(s2, s0)
+		))
+		assert(graph.edgeSize == 3)
+	}
+
 	test("Preimage, segment") {
 		val s0 = factory.createState(params).set(0, 1)
 		val s1 = factory.createState(params).set(1, 1)

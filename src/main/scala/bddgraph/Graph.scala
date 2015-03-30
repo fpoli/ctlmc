@@ -18,4 +18,8 @@ class Graph(val factory: GraphFactory, val bdd: BDD) extends FactoryElement {
 		val startStateSet = validTransitions.exist(endVarSet)
 		new StateSet(factory, startStateSet)
 	}
+
+	def edgeSize(): Int = {
+		bdd.pathCount().toInt
+	}
 }

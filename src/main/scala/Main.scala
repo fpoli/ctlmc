@@ -41,6 +41,9 @@ object Main {
 				sys.exit(4)
 			}
 		}
+		println(" - " + model.parameters.size + " atomic propositions")
+		println(" - " + model.states.size + " states")
+		println(" - " + model.transitions.edgeSize + " transitions")
 
 		// Check model
 		println("(*) Model checking...")

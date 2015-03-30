@@ -32,6 +32,9 @@ Arguments:
     === CTL Model Checking ===
     (*) Parsing CTL specification AG(Not(And("c1"="T", "c2"="T"))) ...
     (*) Parsing FSM model ./src/test/resources/mutual-exclusion.fsm ...
+     - 9 atomic propositions
+     - 9 states
+     - 14 transitions
     (*) Model checking...
     [OK] The model satisfies the specification
 
