@@ -43,7 +43,7 @@ object Main {
 		}
 		println(" - " + model.parameters.size + " atomic propositions")
 		println(" - " + model.states.size + " states")
-		println(" - " + model.transitions.edgeSize + " transitions")
+		println(" - at least " + model.transitions.countEdges + " transitions")
 
 		// Check model
 		println("(*) Model checking...")

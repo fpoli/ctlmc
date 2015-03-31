@@ -64,7 +64,7 @@ class GraphSpec extends UnitSpec {
 			factory.createEdge(s1, s2),
 			factory.createEdge(s2, s0)
 		))
-		assert(graph.edgeSize == 3)
+		assert(graph.countEdges == 3)
 	}
 
 	test("Preimage, segment") {

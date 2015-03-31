@@ -19,7 +19,7 @@ class Graph(val factory: GraphFactory, val bdd: BDD) extends FactoryElement {
 		new StateSet(factory, startStateSet)
 	}
 
-	def edgeSize(): Int = {
+	def countEdges(): Int = {
 		bdd.pathCount().toInt
 	}
 }
