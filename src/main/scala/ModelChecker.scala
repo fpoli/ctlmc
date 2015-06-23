@@ -3,61 +3,79 @@ import ctlmc.ctl._
 import ctlmc.mayberesult._
 import ctlmc.bddgraph._
 
-class ModelCheckerException(val msg: String) extends Throwable
-
 class ModelChecker(factory: GraphFactory, model: Model) {
-	def checkAtom(paramName: String, valueName: String): StateSet = {
-		val (param, paramIndex) = model.parameters.getParameter(paramName) match {
-			case None =>
-				throw new ModelCheckerException(
-					"Parameter \"" + paramName + "\" not found"
-				)
-			case Some(x) => x
-		}
-		val value = param.getValue(valueName) match {
-			case None =>
-				throw new ModelCheckerException(
-					"Value \"" + valueName + "\" not found in domain of parameter \"" + paramName + "\""
-				)
-			case Some(i) => i
-		}
-		factory.createStateSet(paramIndex, value)
+	def checkAtom(paramName: String, valueName: String): MaybeResult[StateSet] = {
+		for {
+			(param, paramIndex) <-
+				model.parameters.getParameter(paramName) match {
+					case None => Failure("Parameter \"" + paramName + "\" not found")
+					case Some(x) => Result(x)
+				}
+			value <- param.getValue(valueName) match {
+				case None => Failure(
+						"Value \"" +
+						valueName +
+						"\" not found in domain of parameter \"" +
+						paramName +
+						"\""
+					)
+				case Some(i) => Result(i)
+			}
+		} yield (factory.createStateSet(paramIndex, value))
 	}
 
 	def preimage(x: StateSet): StateSet = {
 		model.transitions.preimage(x)
 	}
 
-	def checkEG(p: Ctl): StateSet = {
-		val check_p = check(p)
-		val f = (x: StateSet) => {
-			check_p.and(preimage(x))
-		}
-		fixpoint(f)(check_p)
+	def checkEG(p: Ctl): MaybeResult[StateSet] = {
+		for {
+			check_p <- check(p)
+			val f = (x: StateSet) => {
+				check_p.and(preimage(x))
+			}
+		} yield (fixpoint(f)(check_p))
 	}
 
-	def checkEU(p: Ctl, q: Ctl): StateSet = {
-		val check_p = check(p)
-		val check_q = check(q)
-		val f = (x: StateSet) => {
-			check_q.or(check_p.and(preimage(x)))
-		}
-		fixpoint(f)(check_q)
+	def checkEU(p: Ctl, q: Ctl): MaybeResult[StateSet] = {
+		for {
+			check_p <- check(p)
+			check_q <- check(q)
+			val f = (x: StateSet) => {
+				check_q.or(check_p.and(preimage(x)))
+			}
+		} yield (fixpoint(f)(check_q))
 	}
 
-	def check(spec: Ctl): StateSet = {
+	def check(spec: Ctl): MaybeResult[StateSet] = {
 		spec match {
-			case True => factory.createFullStateSet()
-			case False => factory.createEmptyStateSet()
+			case True => Result(factory.createFullStateSet())
+			case False => Result(factory.createEmptyStateSet())
 			case Atom(n, v) => checkAtom(n, v)
-			case Not(p) => check(p).not
-			case And(p, q) => check(p) and check(q)
-			case Or(p, q) => check(p) or check(q)
-			case Imply(p, q) => check(p) imp check(q)
-			case Iff(p, q) => check(p) biimp check(q)
+			case Not(p) => for {
+					cp <- check(p)
+				} yield (cp.not)
+			case And(p, q) => for {
+					cp <- check(p)
+					cq <- check(q)
+				} yield (cp and cq)
+			case Or(p, q) => for {
+					cp <- check(p)
+					cq <- check(q)
+				} yield (cp or cq)
+			case Imply(p, q) => for {
+					cp <- check(p)
+					cq <- check(q)
+				} yield (cp imp cq)
+			case Iff(p, q) => for {
+					cp <- check(p)
+					cq <- check(q)
+				} yield (cp biimp cq)
 
 			// Preimage
-			case EX(p) => preimage(check(p))
+			case EX(p) => for {
+					cp <- check(p)
+				} yield (preimage(cp))
 
 			// Fixpoint
 			case EG(p) => checkEG(p)
@@ -76,22 +94,9 @@ class ModelChecker(factory: GraphFactory, model: Model) {
 	}
 
 	def checkInitial(specification: Ctl): MaybeResult[Boolean] = {
-		try {
-			val satisfyingStates = check(specification)
-			val initialState = model.states(0)
-
-			/*if (model.states.size < 100) {
-				println("States:")
-				for ((s,i) <- model.states.zipWithIndex) {
-					if (satisfyingStates contains s) {
-						println("  " + i)
-					}
-				}
-			}*/
-
-			Result(satisfyingStates contains initialState)
-		} catch {
-			case e: ModelCheckerException => Failure(e.msg)
-		}
+		val initialState = model.states(0)
+		for {
+			satisfyingStates <- check(specification)
+		} yield (satisfyingStates contains initialState)
 	}
 }
