@@ -21,8 +21,8 @@ class FsmParserSpec extends UnitSpec {
 		parser.parse(input) match {
 			case Result(model) => {
 				assert(model.parameters.size == 2)
-				assert(model.parameters.parameters(0).name == "a")
-				assert(model.parameters.parameters(1).name == "a_2")
+				assert(model.parameters("a")._2 == 0)
+				assert(model.parameters("a_2")._2 == 1)
 			}
 			case Failure(msg) => fail(msg)
 		}
@@ -48,11 +48,11 @@ class FsmParserSpec extends UnitSpec {
 		parser.parse(source) match {
 			case Result(model) => {
 				assert(model.parameters.size == 2)
-				assert(model.parameters.parameters(0).name == "a")
-				assert(model.parameters.parameters(1).name == "b")
-				assert(model.parameters.parameters(0).domain.deep
-					== Array("0", "1", "2", "3").deep)
-				assert(model.parameters.parameters(0).getValue("0") == Some(0))
+				assert(model.parameters("a")._2 == 0)
+				assert(model.parameters("b")._2 == 1)
+				assert(model.parameters("a")._1.keySet
+					== Set("0", "1", "2", "3"))
+				assert(model.parameters("a")._1.get("0") == Some(0))
 			}
 			case Failure(msg) => fail(msg)
 		}

@@ -15,9 +15,12 @@ class GraphFactory extends BDDFactoryReference with BDDOperations {
 	def numParameters(): Int = domainList.size
 	def stateVarNum(): Int = domainList.bddSize
 
-	def setParameters(params: Array[Parameter]): Unit = {
+	def setParameters(parameters: Model.Parameters): Unit = {
 		assert(numParameters == 0, "Parameters already initialized")
-		domainList = new DomainList(this, params)
+		domainList = new DomainList(this, {
+			for ((param, (domain, index)) <- parameters.toSeq.sortBy(_._2._2))
+			yield new Domain(this, param, domain.size)
+		}.toIndexedSeq)
 		bddFactory.setVarNum(2*domainList.bddSize)
 	}
 

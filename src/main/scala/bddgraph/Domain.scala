@@ -8,9 +8,6 @@ class Domain(
 		val domainSize: Int
 	) {
 
-	def this(factory: GraphFactory, param: Parameter) =
-		this(factory, param.name, param.domain.size)
-
 	val bddDomain = factory.bddFactory.extDomain(domainSize)
 	bddDomain.setName(name)
 

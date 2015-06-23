@@ -4,11 +4,8 @@ import net.sf.javabdd._
 
 class DomainList(
 		val factory: GraphFactory,
-		val domains: Array[Domain]
+		val domains: IndexedSeq[Domain]
 	) {
-
-	def this(factory: GraphFactory, domains: Array[Parameter]) =
-		this(factory, {for (d <- domains) yield new Domain(factory, d)})
 
 	val bddSize = domains.foldLeft(0)(_ + _.bddSize)
 
@@ -16,6 +13,7 @@ class DomainList(
 		assert(values.size == domains.size)
 		val res = factory.bddFactory.one()
 		for ((d, v) <- domains.zip(values)) {
+			assert(v >= 0 && v < d.domainSize, "values " + values)
 			res.andWith(d.createBDD(v))
 		}
 		res

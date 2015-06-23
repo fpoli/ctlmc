@@ -11,12 +11,12 @@ class GraphFactorySpec extends UnitSpec {
 class GraphSpec extends UnitSpec {
 	val factory = new GraphFactory()
 	factory.setParameters(Array(
-		new Parameter("v1", Array("F", "T")),
-		new Parameter("v1", Array("F", "T")),
-		new Parameter("v1", Array("F", "T")),
-		new Parameter("v1", Array("F", "T")),
-		new Parameter("v1", Array("F", "T"))
-	))
+		("v1", (Array("F", "T").zipWithIndex.toMap, 0)),
+		("v2", (Array("F", "T").zipWithIndex.toMap, 1)),
+		("v3", (Array("F", "T").zipWithIndex.toMap, 2)),
+		("v4", (Array("F", "T").zipWithIndex.toMap, 3)),
+		("v5", (Array("F", "T").zipWithIndex.toMap, 4))
+	).toMap)
 	val params = Array[Int](0, 0, 0, 0, 0)
 
 	test("Single var State comparison, positive") {

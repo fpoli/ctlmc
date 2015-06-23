@@ -10,12 +10,12 @@ class ModelChecker(factory: GraphFactory, model: Model) {
 
 	def checkAtom(paramName: String, valueName: String): MaybeResult[StateSet] = {
 		for {
-			(param, paramIndex) <-
-				model.parameters.getParameter(paramName) match {
+			(domain, paramIndex) <-
+				model.parameters.get(paramName) match {
 					case None => Failure("Parameter \"" + paramName + "\" not found")
 					case Some(x) => Result(x)
 				}
-			value <- param.getValue(valueName) match {
+			value <- domain.get(valueName) match {
 				case None => Failure(
 						"Value \"" +
 						valueName +

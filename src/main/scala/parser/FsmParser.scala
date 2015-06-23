@@ -11,16 +11,20 @@ class FsmParser(factory: GraphFactory) extends RegexParsers
 
 	def valueSeq(valNum: Int): Parser[Array[String]] =
 		repN(valNum, quotedString) ^^ (_.toArray)
-	def parameter: Parser[Parameter] =
-		parameterName >> (param =>
+	def parameter: Parser[(String, Model.Domain)] =
+		parameterName >> (paramName =>
 			parentesized(numericValue) >> (valNum =>
 				domainName ~> valueSeq(valNum) ^^ (values =>
-					new Parameter(param, values)
+					(paramName, values.iterator.zipWithIndex.toMap)
 				)
 			)
 		)
-	def parameterSeq: Parser[ParameterList] =
-		rep1(parameter) ^^ (x => new ParameterList(x.toArray))
+	def parameterSeq: Parser[Model.Parameters] =
+		rep1(parameter) ^^ (params =>
+			params.iterator.zipWithIndex.map{
+				case((name, domain), index) => (name, (domain, index))
+			}.toMap
+		)
 
 	// 2. States
 
@@ -42,7 +46,7 @@ class FsmParser(factory: GraphFactory) extends RegexParsers
 
 	def expr: Parser[Model] =
 		parameterSeq <~ separator >> (params => {
-			factory.setParameters(params.parameters)
+			factory.setParameters(params)
 			stateSeq(params.size) <~ separator >> (states =>
 				transitionSeq(states) ^^ (g =>
 					new Model(params, states, g)
