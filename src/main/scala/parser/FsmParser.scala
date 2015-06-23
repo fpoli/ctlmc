@@ -44,19 +44,15 @@ class FsmParser(factory: GraphFactory) extends RegexParsers
 
 	// Expression
 
-	def expr: Parser[Model] = {
-		println(" - parse parameters...")
+	def expr: Parser[Model] =
 		parameterSeq <~ separator >> (params => {
-			println(" - parse states...")
 			factory.setParameters(params)
-			stateSeq(params.size) <~ separator >> { states =>
-				println(" - parse transitions...")
+			stateSeq(params.size) <~ separator >> (states =>
 				transitionSeq(states) ^^ (g =>
 					new Model(params, states, g)
 				)
-			}
+			)
 		})
-	}
 
 	def parse(input: => String): MaybeResult[Model] =
 		runParser(expr, input)
