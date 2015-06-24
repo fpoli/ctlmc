@@ -19,11 +19,8 @@ class State(val factory: GraphFactory, val bdd: BDD) extends FactoryElement {
 
 	def toSet(): StateSet = factory.createStateSet(this)
 
-	override def equals(other: Any) = {
-		val that = other.asInstanceOf[State]
-		if (that == null) false
-		else {
-			factory == that.factory && bdd.equals(that.bdd)
-		}
+	override def equals(other: Any) = other match {
+		case that: State => factory == that.factory && bdd.equals(that.bdd)
+		case _ => false
 	}
 }

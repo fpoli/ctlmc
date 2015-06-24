@@ -37,11 +37,8 @@ class StateSet(val factory: GraphFactory, val bdd: BDD) extends FactoryElement {
 	def biimp(other: StateSet): StateSet =
 		new StateSet(factory, bdd.biimp(other.bdd))
 
-	override def equals(other: Any) = {
-		val that = other.asInstanceOf[StateSet]
-		if (that == null) false
-		else {
-			factory == that.factory && bdd.equals(that.bdd)
-		}
+	override def equals(other: Any) = other match {
+		case that: StateSet => factory == that.factory && bdd.equals(that.bdd)
+		case _ => false
 	}
 }
