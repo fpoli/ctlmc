@@ -2,9 +2,7 @@ package ctlmc.bddgraph
 import net.sf.javabdd._
 
 class StateSet(val factory: GraphFactory, val bdd: BDD) extends FactoryElement {
-	def this(factory: GraphFactory, state: State) = this(factory, {
-		state.bdd
-	})
+	def this(factory: GraphFactory, state: State) = this(factory, state.bdd)
 
 	def this(factory: GraphFactory, states: Iterable[State]) = this(factory, {
 		var set = factory.bddFactory.zero()

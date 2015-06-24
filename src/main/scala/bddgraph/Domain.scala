@@ -4,12 +4,12 @@ import net.sf.javabdd._
 
 class Domain(
 		val factory: GraphFactory,
-		val name: String,
+		val paramName: String,
 		val domainSize: Int
 	) {
 
 	val bddDomain = factory.bddFactory.extDomain(domainSize)
-	bddDomain.setName(name)
+	bddDomain.setName(paramName)
 
 	val bddSize = bddDomain.varNum()
 
