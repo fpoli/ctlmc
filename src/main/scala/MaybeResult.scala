@@ -14,9 +14,9 @@ abstract class MaybeResult[+A] {
 }
 
 case class Result[+A](val result: A) extends MaybeResult[A] {
-	override def flatMap[B](f: A => MaybeResult[B]) = f(result)
+	override def flatMap[B](f: A => MaybeResult[B]): MaybeResult[B] = f(result)
 }
 
 case class Failure(val message: String) extends MaybeResult[Nothing] {
-	override def flatMap[B](f: Nothing => MaybeResult[B]) = Failure(message)
+	override def flatMap[B](f: Nothing => MaybeResult[B]): MaybeResult[B] = Failure(message)
 }

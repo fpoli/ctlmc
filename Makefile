@@ -1,4 +1,4 @@
-.PHONY: default build test run clean
+.PHONY: all build test run benchmark package todo clean
 
 all: build
 

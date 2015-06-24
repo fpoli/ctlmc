@@ -37,10 +37,10 @@ class GraphFactory extends BDDFactoryReference with BDDOperations {
 		new StateSet(this, domainList.createFullBDD) // This is not the one() BDD
 	def createEmptyStateSet(): StateSet =
 		new StateSet(this, bddFactory.zero)
-	
+
 	def createEdge(start: State, end: State): Edge =
 		new Edge(this, start, end)
-	
+
 	def createGraph(edges: Iterable[Edge]): Graph =
 		new Graph(this, edges)
 }

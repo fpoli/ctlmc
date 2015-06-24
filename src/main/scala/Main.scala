@@ -17,11 +17,16 @@ object Main {
 			sys.exit(1)
 		}
 		val rawSpecification = args(0)
-		val modelFile = args(1)
-		lazy val source = Source.fromFile(modelFile).mkString
+		val modelFileName = args(1)
+		val modelFile = Source.fromFile(modelFileName)
+		lazy val source = try {
+			modelFile.getLines mkString "\n" 
+		} finally {
+			modelFile.close()
+		}
 
 		val graphFactory = new GraphFactory()
-		val ctlParser = new CtlParser
+		val ctlParser = new CtlParser()
 		val fsmParser = new FsmParser(graphFactory)
 
 		// Parse input
@@ -33,7 +38,7 @@ object Main {
 				sys.exit(3)
 			}
 		}
-		println("(*) Parsing FSM model " + modelFile + " ...")
+		println("(*) Parsing FSM model " + modelFileName + " ...")
 		val model = fsmParser.parse(source) match {
 			case Result(result) => result
 			case Failure(msg) => {
